@@ -14,8 +14,11 @@ $ npm install tevere --save
 
 ```js
 const Tevere = require('tevere')
+const Memdown = require('memdown')
 
-const db = Tevere('partition name')
+const db = Tevere('partition name', {
+  log: Memdown('partition name')
+})
 
 db.put('key', { val: 'ue' }, (err) => {
   if (err) {
@@ -25,15 +28,25 @@ db.put('key', { val: 'ue' }, (err) => {
 })
 ```
 
-## Tevere instance API
+## Tevere API
 
-A Tever instance respects the [Leveldown API](https://github.com/level/leveldown#api). Here are the main methods:
+### `Tevere (partition, options)`
 
-### .put (key, value, callback)
+Creates a Tevere instance.
+
+* partition (string, mandatory): identifies the partition this node will participate in.
+* options (object, mandatory): some options:
+  * `ipfsOptions` (object, optional). [IPFS options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node).
+  * `log` (LevelDown-compatible database): this is where the node keeps the log entries (which only have a vector clock and a hash — all the actual data is kept in IPFS).
+  * `ipfs` (IPFS object, optional): an IPFS object instance. If you already can provide an IPFS object, pass it in here.
+
+A Tevere instance respects the [Leveldown API](https://github.com/level/leveldown#api). Here are the main methods:
+
+### db.put (key, value, callback)
 
 Save a value to key.
 
-### .get (key, callback)
+### db.get (key, callback)
 
 Get the value stored in `key`.
 
@@ -53,6 +66,9 @@ Every time there is a change (either local or remote), a Tevere instance emits a
 * `key` (string)
 * `value` (any, relevant for `put` type operations)
 
+# Examples
+
+Check [the tests dir](test) for some examples.
 
 # Internals
 
