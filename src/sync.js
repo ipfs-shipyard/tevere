@@ -9,7 +9,7 @@ const Room = require('./room')
 // TODO: tweak these values to generate less traffic
 const BACKOFF_OPTIONS = {
   initialDelay: 1000,
-  maxDelay: 2000
+  maxDelay: 4000
 }
 
 module.exports = class Sync extends EventEmitter {
