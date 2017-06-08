@@ -1,0 +1,51 @@
+{
+  "name": "tevere",
+  "version": "0.1.0",
+  "description": "Decentralized DB over IPFS",
+  "main": "src/index",
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint && npm run test:browser",
+    "test:browser": "aegir-test browser --dom"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pgte/tevere.git"
+  },
+  "keywords": [
+    "IPFS",
+    "p2p",
+    "decentralized",
+    "level",
+    "leveldown",
+    "levelup",
+    "database",
+    "db"
+  ],
+  "author": "Pedro Teixeira <i@pgte.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pgte/tevere/issues"
+  },
+  "homepage": "https://github.com/pgte/tevere#readme",
+  "dependencies": {
+    "async": "^2.4.1",
+    "backoff": "^2.5.0",
+    "debug": "^2.6.8",
+    "hyperdiff": "^2.0.2",
+    "ipfs-level": "*",
+    "lodash.clonedeep": "^4.5.0",
+    "vectorclock": "0.0.0"
+  },
+  "devDependencies": {
+    "aegir": "^11.0.2",
+    "chai": "^4.0.2",
+    "dirty-chai": "^1.2.2",
+    "ipfs-repo": "^0.13.1",
+    "memdown": "^1.2.4",
+    "standard": "^10.0.2"
+  },
+  "browser": {
+    "./test/utils/create-repo-node.js": "./test/utils/create-repo-browser.js"
+  }
+}
