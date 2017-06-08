@@ -33,7 +33,7 @@
     "backoff": "^2.5.0",
     "debug": "^2.6.8",
     "hyperdiff": "^2.0.2",
-    "ipfs-level": "*",
+    "ipfs-level": "^1.0.0",
     "lodash.clonedeep": "^4.5.0",
     "vectorclock": "0.0.0"
   },
