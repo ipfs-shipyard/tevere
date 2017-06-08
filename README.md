@@ -1,4 +1,4 @@
-# tevere
+# Tevere
 
 > Decentralized DB over IPFS
 
@@ -45,7 +45,7 @@ Returns an iterator over the database. Supports [the same options described in t
 
 A Tevere instance emits these event types:
 
-#### `change (change)`
+#### `"change" (change)`
 
 Every time there is a change (either local or remote), a Tevere instance emits a `change` event, which is an object that has these properties:
 
@@ -53,6 +53,10 @@ Every time there is a change (either local or remote), a Tevere instance emits a
 * `key` (string)
 * `value` (any, relevant for `put` type operations)
 
+
+# Internals
+
+Internal workings are [documented here](docs/INTERNALS.md).
 
 # License
 
