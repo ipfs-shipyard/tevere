@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 const backoff = require('backoff').fibonacci
 const debug = require('debug')('tevere:sync')
 
-const Room = require('./room')
+const Room = require('ipfs-pubsub-room')
 
 // TODO: tweak these values to generate less traffic
 const BACKOFF_OPTIONS = {
@@ -27,7 +27,7 @@ module.exports = class Sync extends EventEmitter {
     this._backoff.on('ready', this._broadcast.bind(this))
     this._backoff.backoff()
 
-    this._room = new Room(this._topic, ipfs)
+    this._room = Room(ipfs, this._topic)
     this._room.on('peer joined', () => {
       this._backoff.reset()
       this._broadcast()
@@ -55,16 +55,9 @@ module.exports = class Sync extends EventEmitter {
     }
 
     if (this._head) {
-      // debug('broadcasting head. topic = %s, head = %s', this._topic, this._head)
-      this._ipfs.pubsub.publish(this._topic, Buffer.from(this._head), (err) => {
-        if (err) {
-          this.emit('error', err)
-        }
-        this._backoff.backoff()
-      })
-    } else {
-      this._backoff.backoff()
+      this._room.broadcast(Buffer.from(this._head))
     }
+    this._backoff.backoff()
   }
 
   _onMessage (message) {
