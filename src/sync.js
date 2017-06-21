@@ -28,7 +28,8 @@ module.exports = class Sync extends EventEmitter {
     this._backoff.backoff()
 
     this._room = Room(ipfs, this._topic)
-    this._room.on('peer joined', () => {
+    this._room.on('peer joined', (peer) => {
+      debug('peer joined', peer)
       this._backoff.reset()
       this._broadcast()
     })

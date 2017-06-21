@@ -1,6 +1,6 @@
 # Tevere
 
-> Decentralized DB over IPFS
+> Decentralized eventually-consistent key-value store over IPFS
 
 [![Build Status](https://travis-ci.org/pgte/tevere.svg?branch=master)](https://travis-ci.org/pgte/tevere)
 
@@ -11,6 +11,8 @@ $ npm install tevere --save
 ```
 
 ## Use
+
+Here we're using Memdown as a log database, but you can use any database that conforms to the Leveldown interface (Level-js on the browser or Leveldown on Node.js):
 
 ```js
 const Tevere = require('tevere')
@@ -28,6 +30,27 @@ db.put('key', { val: 'ue' }, (err) => {
 })
 ```
 
+### Merge
+
+By default, when a conflict exists (two nodes have concucrently performed a change on the same key), Tevere will determinstically choose one of the values for you. Instead, you can provide a synchronous merge function like this:
+
+```js
+const db = Tevere('partition name', {
+  log: Memdown('partition name'),
+  merge: merge
+})
+
+// custom merge function that merges two records
+function merge (v1, v2) {
+  return {
+    a: v1.a,
+    b: v2.b,
+    c: v1.c.concat(v2.c),
+    d: Math.max(v1.d, v2.d)
+  }
+}
+```
+
 ## Tevere API
 
 ### `Tevere (partition, options)`
@@ -39,6 +62,7 @@ Creates a Tevere instance.
   * `ipfsOptions` (object, optional). [IPFS options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node).
   * `log` (LevelDown-compatible database): this is where the node keeps the log entries (which only have a vector clock and a hash — all the actual data is kept in IPFS).
   * `ipfs` (IPFS object, optional): an IPFS object instance. If you already can provide an IPFS object, pass it in here.
+  * `merge` (function, optional): a synchronous function that will receive two values and return a new value.
 
 A Tevere instance respects the [Leveldown API](https://github.com/level/leveldown#api). Here are the main methods:
 

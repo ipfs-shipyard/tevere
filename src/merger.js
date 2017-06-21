@@ -12,10 +12,11 @@ const decoding = require('./decoding')
 const Persister = require('./persister')
 
 module.exports = class Merger {
-  constructor (nodeId, ipfs, log) {
+  constructor (nodeId, ipfs, log, merge) {
     this._nodeId = nodeId
     this._ipfs = ipfs
     this._log = log
+    this._merge = merge
     this._headQueue = []
     this._persister = new Persister(this._ipfs, this._log)
     this._queue = Queue(this._processRemoteHead.bind(this), 1)
@@ -123,6 +124,11 @@ module.exports = class Merger {
                     }
                     this._debug('conflict for key %j', remoteLogEntry.key)
                     // local latest log entry is CONCURRENT to remote one
+
+                    if (this._merge) {
+                      this._merge(localLatestLogEntry, remoteLogEntry, callback)
+                      return // early
+                    }
 
                     const chosenEntry = chooseOne([localLatestLogEntryCID, remoteEntryCID])
                     this._debug('chosen entry: %j', chosenEntry)

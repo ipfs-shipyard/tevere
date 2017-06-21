@@ -4,14 +4,28 @@ const IPFSLevel = require('ipfs-level').IPFSLevel
 const merge = require('deep-assign')
 const clone = require('lodash.clonedeep')
 const debug = require('debug')('tevere:tevere')
+const map = require('async/map')
+const waterfall = require('async/waterfall')
 
 const defaultOptions = require('./options')
 const Merger = require('./merger')
 const Sync = require('./sync')
 
+const mandatoryOptions = {
+  retainLog: true
+}
+
+const OPTIONS = {
+  dag: {
+    put: {
+      format: 'dag-cbor'
+    }
+  }
+}
+
 module.exports = class Tevere extends IPFSLevel {
   constructor (partition, _options) {
-    const options = merge({}, clone(defaultOptions), _options)
+    const options = merge({}, clone(defaultOptions), _options, mandatoryOptions)
     super(partition, options)
   }
 
@@ -26,7 +40,7 @@ module.exports = class Tevere extends IPFSLevel {
       const nodeId = this.ipfsNodeId()
       const log = this.log()
 
-      this._merger = new Merger(nodeId, ipfs, log)
+      this._merger = new Merger(nodeId, ipfs, log, this._options.merge && this._merge.bind(this))
 
       this._sync = new Sync(nodeId, this.partition(), log, ipfs)
       this._sync.on('error', (err) => this.emit('error', err))
@@ -58,5 +72,27 @@ module.exports = class Tevere extends IPFSLevel {
 
       callback()
     })
+  }
+
+  _merge (localLogEntry, remoteLogEntry, callback) {
+    map(
+      [localLogEntry.cid, remoteLogEntry.cid].sort(),
+      (cid, callback) => this._ipfs.dag.get(cid, callback),
+      (err, records) => {
+        if (err) {
+          callback(err)
+          // return // early
+        }
+        const mergedValue = this._options.merge(records[0].value, records[1].value)
+
+        waterfall(
+          [
+            (callback) => this._ipfs.dag.put(mergedValue, OPTIONS.dag.put, callback),
+            (cid, callback) => this._log._save(localLogEntry.key, cid.toBaseEncodedString(), callback)
+          ],
+          callback)
+        // this.log().setHead(logEntry, callback)
+      }
+    )
   }
 }
