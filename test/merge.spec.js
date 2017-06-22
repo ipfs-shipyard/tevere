@@ -52,7 +52,9 @@ describe('merge', () => {
     dbs.forEach((db, index) => {
       db.on('change', (change) => {
         if (change.key === 'conflicting key') {
-          if (++dbChangeCount[index] === 2) {
+          const count = ++dbChangeCount[index]
+          expect(count).to.be.at.most(2)
+          if (count === 2) {
             expect(change.value).to.deep.equal(['value 1', 'value 2'])
             maybeDone()
           }
@@ -62,7 +64,7 @@ describe('merge', () => {
 
     function maybeDone () {
       if (dbChangeCount.every((count) => count === 2)) {
-        done()
+        setTimeout(done, 5000)
       }
     }
 

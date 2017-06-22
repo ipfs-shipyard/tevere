@@ -126,7 +126,12 @@ module.exports = class Merger {
                     // local latest log entry is CONCURRENT to remote one
 
                     if (this._merge) {
-                      this._merge(localLatestLogEntry, remoteLogEntry, callback)
+                      this._merge(
+                        localLatestLogEntryCID,
+                        localLatestLogEntry,
+                        remoteHeadCID,
+                        remoteLogEntry,
+                        callback)
                       return // early
                     }
 

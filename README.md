@@ -30,7 +30,7 @@ db.put('key', { val: 'ue' }, (err) => {
 })
 ```
 
-### Merge
+### Custom merge function
 
 By default, when a conflict exists (two nodes have concucrently performed a change on the same key), Tevere will determinstically choose one of the values for you. Instead, you can provide a synchronous merge function like this:
 
@@ -50,6 +50,37 @@ function merge (v1, v2) {
   }
 }
 ```
+
+#### Custom merge and determinism
+
+If you define a custom merge function, the result must be deterministic. For every node involved in the same conflict, Tevere guarantees that the order of the values passed into the merge function is the same. In return, you must guarantee that, __given the same two values, you always return the same merged value.__
+
+This means that you cannot generate data that is not deterministic, like random values or even time stamps.
+
+Invalid merge function:
+
+```js
+function merge (v1, v2) {
+  return {
+    timestamp: Date.now()
+  }
+}
+```
+
+This is valid, though:
+
+```js
+function merge (v1, v2) {
+  return {
+    timestamp: Math.max(v1.timestamp, v2.timestamp)
+  }
+}
+```
+
+__Tevere's compromise: Given a specific conflict, the order of the two values passed into the merge function is always the same.__ This means that, if two nodes have conflicting changes, both nodes custom merge functions will be called with the exact same arguments in the exact same order.
+
+__Your compromise: Determinism, purely funcional merge function__: given a sets of two conflicting values, you always return the same merged value, no matter at which node and at which time the merging occurs.
+
 
 ## Tevere API
 

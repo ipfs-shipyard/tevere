@@ -74,7 +74,7 @@ module.exports = class Tevere extends IPFSLevel {
     })
   }
 
-  _merge (localLogEntry, remoteLogEntry, callback) {
+  _merge (localLatestLogEntryCID, localLogEntry, remoteHeadCID, remoteLogEntry, callback) {
     map(
       [localLogEntry.cid, remoteLogEntry.cid].sort(),
       (cid, callback) => this._ipfs.dag.get(cid, callback),
@@ -84,11 +84,17 @@ module.exports = class Tevere extends IPFSLevel {
           // return // early
         }
         const mergedValue = this._options.merge(records[0].value, records[1].value)
+        const parentCIDs = [localLatestLogEntryCID, remoteHeadCID]
+        const parentVectorClocks = [localLogEntry, remoteLogEntry]
 
         waterfall(
           [
             (callback) => this._ipfs.dag.put(mergedValue, OPTIONS.dag.put, callback),
-            (cid, callback) => this._log._save(localLogEntry.key, cid.toBaseEncodedString(), callback)
+            (cid, callback) => {
+              callback(null, cid)
+            },
+            (cid, callback) => this._log.save(
+              localLogEntry.key, cid.toBaseEncodedString(), parentCIDs, parentVectorClocks, callback)
           ],
           callback)
         // this.log().setHead(logEntry, callback)
