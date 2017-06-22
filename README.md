@@ -4,8 +4,6 @@
 
 > Decentralized eventually-consistent key-value store over IPFS
 
-[![Build Status](https://travis-ci.org/pgte/tevere.svg?branch=master)](https://travis-ci.org/pgte/tevere)
-
 ## Install
 
 ```bash
