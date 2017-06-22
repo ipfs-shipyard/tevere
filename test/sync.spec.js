@@ -46,6 +46,7 @@ describe('sync', () => {
   after((done) => each(repos, (repo, cb) => repo.teardown(cb), done))
 
   it('puts in one', (done) => {
+    console.log('(1)')
     db2.once('change', (change) => {
       expect(change.type).to.equal('put')
       expect(change.key).to.equal('key')
