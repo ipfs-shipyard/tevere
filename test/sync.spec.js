@@ -48,13 +48,17 @@ describe('sync', () => {
   it('puts in one', (done) => {
     console.log('(1)')
     db2.once('change', (change) => {
+      console.log('CHANGE:', change)
       expect(change.type).to.equal('put')
       expect(change.key).to.equal('key')
       expect(change.value).to.equal('value')
       done()
     })
 
-    db1.put('key', 'value', expectNoError)
+    db1.put('key', 'value', (err) => {
+      expect(err).to.not.exist()
+      console.log('have putted..')
+    })
   })
 
   it('puts some keys', (done) => {
