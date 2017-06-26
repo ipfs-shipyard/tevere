@@ -1,6 +1,6 @@
 {
   "name": "tevere",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Decentralized eventually-consistent key-value store over IPFS for the browser. Exposes a Leveldown-compatible API.",
   "main": "src/index",
   "scripts": {
