@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pgte/tevere.svg?branch=master)](https://travis-ci.org/pgte/tevere)
 
-> Decentralized eventually-consistent key-value store over IPFS
+> Decentralized eventually-consistent key-value store over IPFS for the browser. Exposes a [Leveldown-compatible API](https://github.com/level/leveldown#api).
 
 ## Install
 
@@ -97,6 +97,16 @@ Creates a Tevere instance.
 
 A Tevere instance respects the [Leveldown API](https://github.com/level/leveldown#api). Here are the main methods:
 
+Example:
+
+```js
+const Leveljs = require('level-js')
+
+const db = Tevere('partition name', {
+  log: Leveljs('partition name')
+})
+```
+
 ### db.put (key, value, callback)
 
 Save a value to key.
@@ -105,7 +115,7 @@ Save a value to key.
 
 Get the value stored in `key`.
 
-### .iterator (options)
+### db.iterator (options)
 
 Returns an iterator over the database. Supports [the same options described in the Leveldown API](https://github.com/level/leveldown#leveldown_iterator).
 
@@ -132,6 +142,10 @@ Internal workings are [documented here](docs/INTERNALS.md).
 # License
 
 MIT
+
+## Why the name "Tevere"?
+
+Tevere is the italian name for the river that goes through Rome. At the time the repo for this project was created, I was hanging out in Rome with some of the IPFS crew, so I guess it made sense at the time...
 
 ## Contribute
 
